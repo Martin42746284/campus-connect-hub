@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Users, Plus } from "lucide-react";
+import { CreateGroupDialog } from "@/components/CreateGroupDialog";
 
 const Groups = () => {
   const groups = [
@@ -61,6 +62,7 @@ const Groups = () => {
             <Plus className="h-5 w-5 mr-2" />
             Créer un groupe
           </Button>
+          <CreateGroupDialog />
         </div>
 
         <Card className="border-border">

@@ -5,8 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GraduationCap } from "lucide-react";
+import { useState } from "react";
 
 const Signup = () => {
+  const [userType, setUserType] = useState<"student" | "professor">("student");
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-8 py-8">
@@ -28,6 +31,19 @@ const Signup = () => {
           </CardHeader>
           <CardContent>
             <form className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="userType">Type de compte</Label>
+                <Select value={userType} onValueChange={(value: "student" | "professor") => setUserType(value)}>
+                  <SelectTrigger id="userType">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Étudiant</SelectItem>
+                    <SelectItem value="professor">Professeur</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Prénom</Label>
@@ -62,38 +78,72 @@ const Signup = () => {
                 </p>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="program">Programme d'études</Label>
-                  <Select>
-                    <SelectTrigger id="program">
-                      <SelectValue placeholder="Sélectionner" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="licence">Licence</SelectItem>
-                      <SelectItem value="master">Master</SelectItem>
-                      <SelectItem value="doctorat">Doctorat</SelectItem>
-                      <SelectItem value="staff">Personnel</SelectItem>
-                    </SelectContent>
-                  </Select>
+              {userType === "student" ? (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="program">Programme d'études</Label>
+                    <Select>
+                      <SelectTrigger id="program">
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="licence">Licence</SelectItem>
+                        <SelectItem value="master">Master</SelectItem>
+                        <SelectItem value="doctorat">Doctorat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="field">Domaine d'étude</Label>
+                    <Select>
+                      <SelectTrigger id="field">
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sciences">Sciences</SelectItem>
+                        <SelectItem value="arts">Arts et Lettres</SelectItem>
+                        <SelectItem value="engineering">Ingénierie</SelectItem>
+                        <SelectItem value="business">Gestion</SelectItem>
+                        <SelectItem value="health">Santé</SelectItem>
+                        <SelectItem value="other">Autre</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="field">Domaine d'étude</Label>
-                  <Select>
-                    <SelectTrigger id="field">
-                      <SelectValue placeholder="Sélectionner" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sciences">Sciences</SelectItem>
-                      <SelectItem value="arts">Arts et Lettres</SelectItem>
-                      <SelectItem value="engineering">Ingénierie</SelectItem>
-                      <SelectItem value="business">Gestion</SelectItem>
-                      <SelectItem value="health">Santé</SelectItem>
-                      <SelectItem value="other">Autre</SelectItem>
-                    </SelectContent>
-                  </Select>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="department">Département</Label>
+                    <Select>
+                      <SelectTrigger id="department">
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sciences">Sciences</SelectItem>
+                        <SelectItem value="arts">Arts et Lettres</SelectItem>
+                        <SelectItem value="engineering">Ingénierie</SelectItem>
+                        <SelectItem value="business">Gestion</SelectItem>
+                        <SelectItem value="health">Santé</SelectItem>
+                        <SelectItem value="other">Autre</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Titre académique</Label>
+                    <Select>
+                      <SelectTrigger id="title">
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="lecturer">Chargé de cours</SelectItem>
+                        <SelectItem value="assistant">Assistant</SelectItem>
+                        <SelectItem value="associate">Professeur associé</SelectItem>
+                        <SelectItem value="full">Professeur titulaire</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">

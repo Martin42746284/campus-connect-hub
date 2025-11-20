@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Users, Plus } from "lucide-react";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
 
 const Events = () => {
   const events = [
@@ -69,6 +70,7 @@ const Events = () => {
             <Plus className="h-5 w-5 mr-2" />
             Créer un événement
           </Button>
+          <CreateEventDialog />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
