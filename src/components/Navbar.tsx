@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Home, Calendar, Users, MessageSquare, User } from "lucide-react";
+import { GraduationCap, Home, Calendar, Users, MessageSquare } from "lucide-react";
+import { NotificationDropdown } from "./NotificationDropdown";
 
 export const Navbar = () => {
   return (
@@ -33,6 +34,7 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          <NotificationDropdown />
           <Link to="/login">
             <Button variant="ghost">Connexion</Button>
           </Link>

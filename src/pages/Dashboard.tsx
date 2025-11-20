@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Share2, Image, Calendar, Users } from "lucide-react";
+import { Image, Calendar, Users } from "lucide-react";
+import { Post } from "@/components/Post";
 
 const Dashboard = () => {
   return (
@@ -103,73 +104,29 @@ const Dashboard = () => {
             </Card>
 
             {/* Feed Posts */}
-            <Card className="border-border">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-start space-x-4">
-                  <Avatar>
-                    <AvatarFallback className="bg-secondary text-secondary-foreground">ML</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <p className="font-semibold text-foreground">Marie Laurent</p>
-                      <p className="text-xs text-muted-foreground">Il y a 2 heures</p>
-                    </div>
-                    <p className="text-sm text-foreground">
-                      Super conférence sur l'intelligence artificielle aujourd'hui ! 🤖 
-                      J'ai hâte de partager ce que j'ai appris avec le club de robotique.
-                    </p>
-                    <div className="flex items-center space-x-6 pt-2">
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                        <Heart className="h-4 w-4 mr-2" />
-                        24
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        8
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Partager
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Post
+              author={{
+                name: "Marie Laurent",
+                avatar: "",
+                role: "Étudiante en Physique"
+              }}
+              content="Super conférence sur l'intelligence artificielle aujourd'hui ! 🤖 J'ai hâte de partager ce que j'ai appris avec le club de robotique."
+              timestamp="Il y a 2 heures"
+              likes={24}
+              comments={8}
+            />
 
-            <Card className="border-border">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-start space-x-4">
-                  <Avatar>
-                    <AvatarFallback className="bg-accent text-accent-foreground">PD</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <p className="font-semibold text-foreground">Paul Dubois</p>
-                      <p className="text-xs text-muted-foreground">Il y a 5 heures</p>
-                    </div>
-                    <p className="text-sm text-foreground">
-                      Quelqu'un aurait les notes du cours de mathématiques de ce matin ? 
-                      J'ai dû partir plus tôt. Merci d'avance ! 📚
-                    </p>
-                    <div className="flex items-center space-x-6 pt-2">
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                        <Heart className="h-4 w-4 mr-2" />
-                        12
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        15
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Partager
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Post
+              author={{
+                name: "Paul Dubois",
+                avatar: "",
+                role: "Étudiant en Mathématiques"
+              }}
+              content="Quelqu'un aurait les notes du cours de mathématiques de ce matin ? J'ai dû partir plus tôt. Merci d'avance ! 📚"
+              timestamp="Il y a 5 heures"
+              likes={12}
+              comments={15}
+            />
           </main>
         </div>
       </div>
