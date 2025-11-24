@@ -1,14 +1,96 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GraduationCap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const Signup = () => {
   const [userType, setUserType] = useState<"student" | "professor">("student");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [program, setProgram] = useState("");
+  const [department, setDepartment] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "Erreur",
+        description: "Les mots de passe ne correspondent pas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      const fullName = `${firstName} ${lastName}`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: fullName,
+            user_type: userType,
+            program: userType === "student" ? program : null,
+            department: userType === "professor" ? department : null,
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        toast({
+          title: "Inscription réussie !",
+          description: "Votre compte a été créé avec succès.",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erreur d'inscription",
+        description: error.message || "Une erreur est survenue lors de l'inscription",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -30,7 +112,7 @@ const Signup = () => {
             <CardDescription>Remplissez le formulaire pour créer votre compte</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6">
+            <form onSubmit={handleSignup} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="userType">Type de compte</Label>
                 <Select value={userType} onValueChange={(value: "student" | "professor") => setUserType(value)}>
@@ -51,6 +133,8 @@ const Signup = () => {
                     id="firstName" 
                     type="text" 
                     placeholder="Jean"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     required
                   />
                 </div>
@@ -60,6 +144,8 @@ const Signup = () => {
                     id="lastName" 
                     type="text" 
                     placeholder="Dupont"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     required
                   />
                 </div>
@@ -71,6 +157,8 @@ const Signup = () => {
                   id="email" 
                   type="email" 
                   placeholder="jean.dupont@uaz.edu"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
                 <p className="text-xs text-muted-foreground">
@@ -79,69 +167,28 @@ const Signup = () => {
               </div>
 
               {userType === "student" ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="program">Programme d'études</Label>
-                    <Select>
-                      <SelectTrigger id="program">
-                        <SelectValue placeholder="Sélectionner" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="licence">Licence</SelectItem>
-                        <SelectItem value="master">Master</SelectItem>
-                        <SelectItem value="doctorat">Doctorat</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="field">Domaine d'étude</Label>
-                    <Select>
-                      <SelectTrigger id="field">
-                        <SelectValue placeholder="Sélectionner" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sciences">Sciences</SelectItem>
-                        <SelectItem value="arts">Arts et Lettres</SelectItem>
-                        <SelectItem value="engineering">Ingénierie</SelectItem>
-                        <SelectItem value="business">Gestion</SelectItem>
-                        <SelectItem value="health">Santé</SelectItem>
-                        <SelectItem value="other">Autre</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="program">Programme d'études</Label>
+                  <Input 
+                    id="program" 
+                    type="text" 
+                    placeholder="Licence Informatique"
+                    value={program}
+                    onChange={(e) => setProgram(e.target.value)}
+                    required
+                  />
                 </div>
               ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Département</Label>
-                    <Select>
-                      <SelectTrigger id="department">
-                        <SelectValue placeholder="Sélectionner" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sciences">Sciences</SelectItem>
-                        <SelectItem value="arts">Arts et Lettres</SelectItem>
-                        <SelectItem value="engineering">Ingénierie</SelectItem>
-                        <SelectItem value="business">Gestion</SelectItem>
-                        <SelectItem value="health">Santé</SelectItem>
-                        <SelectItem value="other">Autre</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Titre académique</Label>
-                    <Select>
-                      <SelectTrigger id="title">
-                        <SelectValue placeholder="Sélectionner" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="lecturer">Chargé de cours</SelectItem>
-                        <SelectItem value="assistant">Assistant</SelectItem>
-                        <SelectItem value="associate">Professeur associé</SelectItem>
-                        <SelectItem value="full">Professeur titulaire</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="department">Département</Label>
+                  <Input 
+                    id="department" 
+                    type="text" 
+                    placeholder="Informatique"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    required
+                  />
                 </div>
               )}
 
@@ -152,6 +199,8 @@ const Signup = () => {
                     id="password" 
                     type="password" 
                     placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
@@ -161,32 +210,21 @@ const Signup = () => {
                     id="confirmPassword" 
                     type="password" 
                     placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                 </div>
               </div>
 
-              <div className="flex items-start space-x-2">
-                <input 
-                  type="checkbox" 
-                  id="terms" 
-                  className="mt-1 rounded border-input"
-                  required
-                />
-                <Label htmlFor="terms" className="text-sm font-normal cursor-pointer leading-relaxed">
-                  J'accepte les{" "}
-                  <Link to="#" className="text-primary hover:underline">
-                    conditions d'utilisation
-                  </Link>{" "}
-                  et la{" "}
-                  <Link to="#" className="text-primary hover:underline">
-                    politique de confidentialité
-                  </Link>
-                </Label>
-              </div>
-
-              <Button type="submit" className="w-full" variant="hero" size="lg">
-                Créer mon compte
+              <Button 
+                type="submit" 
+                className="w-full" 
+                variant="hero" 
+                size="lg"
+                disabled={loading}
+              >
+                {loading ? "Création du compte..." : "Créer mon compte"}
               </Button>
             </form>
 
