@@ -1,11 +1,59 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        toast({
+          title: "Connexion réussie",
+          description: "Bienvenue sur UAZ Connect !",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erreur de connexion",
+        description: error.message || "Email ou mot de passe incorrect",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
@@ -26,13 +74,15 @@ const Login = () => {
             <CardDescription>Entrez vos identifiants universitaires</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email universitaire</Label>
                 <Input 
                   id="email" 
                   type="email" 
                   placeholder="votre.nom@uaz.edu"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -42,26 +92,19 @@ const Login = () => {
                   id="password" 
                   type="password" 
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <input 
-                    type="checkbox" 
-                    id="remember" 
-                    className="rounded border-input"
-                  />
-                  <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
-                    Se souvenir de moi
-                  </Label>
-                </div>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                  Mot de passe oublié ?
-                </Link>
-              </div>
-              <Button type="submit" className="w-full" variant="hero" size="lg">
-                Se connecter
+              <Button 
+                type="submit" 
+                className="w-full" 
+                variant="hero" 
+                size="lg"
+                disabled={loading}
+              >
+                {loading ? "Connexion..." : "Se connecter"}
               </Button>
             </form>
 
