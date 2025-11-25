@@ -76,6 +76,7 @@ const Profile = () => {
 
               <TabsContent value="posts" className="space-y-6">
                 <Post
+                  postId="post-1"
                   author={{
                     name: currentUser.name,
                     avatar: currentUser.avatar,
@@ -87,6 +88,7 @@ const Profile = () => {
                   comments={7}
                 />
                 <Post
+                  postId="post-2"
                   author={{
                     name: currentUser.name,
                     avatar: currentUser.avatar,
@@ -98,6 +100,7 @@ const Profile = () => {
                   comments={12}
                 />
                 <Post
+                  postId="post-3"
                   author={{
                     name: currentUser.name,
                     avatar: currentUser.avatar,

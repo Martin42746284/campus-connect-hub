@@ -6,14 +6,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { useCreateGroup } from "@/hooks/useGroups";
 
 export const CreateGroupDialog = () => {
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const createGroup = useCreateGroup();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    await createGroup.mutateAsync({ name, category, description });
     setOpen(false);
+    setName("");
+    setCategory("");
+    setDescription("");
   };
 
   return (
@@ -38,22 +46,24 @@ export const CreateGroupDialog = () => {
               <Input 
                 id="name" 
                 placeholder="Ex: Club de Robotique" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required 
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="category">Catégorie</Label>
-              <Select required>
+              <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Sélectionnez une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="technologie">Technologie</SelectItem>
-                  <SelectItem value="arts">Arts</SelectItem>
-                  <SelectItem value="sport">Sport</SelectItem>
-                  <SelectItem value="culture">Culture</SelectItem>
-                  <SelectItem value="ecologie">Écologie</SelectItem>
-                  <SelectItem value="autre">Autre</SelectItem>
+                  <SelectItem value="Technologie">Technologie</SelectItem>
+                  <SelectItem value="Arts">Arts</SelectItem>
+                  <SelectItem value="Sport">Sport</SelectItem>
+                  <SelectItem value="Culture">Culture</SelectItem>
+                  <SelectItem value="Écologie">Écologie</SelectItem>
+                  <SelectItem value="Autre">Autre</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -63,28 +73,18 @@ export const CreateGroupDialog = () => {
                 id="description" 
                 placeholder="Décrivez les objectifs et activités du groupe..."
                 className="min-h-[100px]"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="visibility">Visibilité</Label>
-              <Select defaultValue="public">
-                <SelectTrigger id="visibility">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="public">Public - Visible par tous</SelectItem>
-                  <SelectItem value="private">Privé - Sur invitation uniquement</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit" variant="hero">
-              Créer le groupe
+            <Button type="submit" variant="hero" disabled={createGroup.isPending}>
+              {createGroup.isPending ? "Création..." : "Créer le groupe"}
             </Button>
           </DialogFooter>
         </form>
