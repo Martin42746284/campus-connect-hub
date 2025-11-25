@@ -122,6 +122,7 @@ const Dashboard = () => {
               posts.map((post) => (
                 <Post
                   key={post.id}
+                  postId={post.id}
                   author={{
                     name: post.profiles?.full_name || "Utilisateur",
                     avatar: post.profiles?.avatar_url || "",

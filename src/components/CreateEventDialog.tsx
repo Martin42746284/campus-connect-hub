@@ -6,14 +6,35 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { useCreateEvent } from "@/hooks/useEvents";
 
 export const CreateEventDialog = () => {
   const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const createEvent = useCreateEvent();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    const dateTime = `${date}T${time}:00`;
+    await createEvent.mutateAsync({
+      title,
+      date: dateTime,
+      location,
+      category,
+      description,
+    });
     setOpen(false);
+    setTitle("");
+    setDate("");
+    setTime("");
+    setLocation("");
+    setCategory("");
+    setDescription("");
   };
 
   return (
@@ -38,6 +59,8 @@ export const CreateEventDialog = () => {
               <Input 
                 id="title" 
                 placeholder="Ex: Conférence Intelligence Artificielle" 
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required 
               />
             </div>
@@ -47,6 +70,8 @@ export const CreateEventDialog = () => {
                 <Input 
                   id="date" 
                   type="date" 
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                   required 
                 />
               </div>
@@ -55,6 +80,8 @@ export const CreateEventDialog = () => {
                 <Input 
                   id="time" 
                   type="time" 
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
                   required 
                 />
               </div>
@@ -64,22 +91,24 @@ export const CreateEventDialog = () => {
               <Input 
                 id="location" 
                 placeholder="Ex: Amphithéâtre A" 
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 required 
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="category">Catégorie</Label>
-              <Select required>
+              <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Sélectionnez une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="technologie">Technologie</SelectItem>
-                  <SelectItem value="culture">Culture</SelectItem>
-                  <SelectItem value="sport">Sport</SelectItem>
-                  <SelectItem value="musique">Musique</SelectItem>
-                  <SelectItem value="conference">Conférence</SelectItem>
-                  <SelectItem value="autre">Autre</SelectItem>
+                  <SelectItem value="Technologie">Technologie</SelectItem>
+                  <SelectItem value="Culture">Culture</SelectItem>
+                  <SelectItem value="Sport">Sport</SelectItem>
+                  <SelectItem value="Musique">Musique</SelectItem>
+                  <SelectItem value="Conférence">Conférence</SelectItem>
+                  <SelectItem value="Autre">Autre</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -89,6 +118,8 @@ export const CreateEventDialog = () => {
                 id="description" 
                 placeholder="Décrivez l'événement en détail..."
                 className="min-h-[100px]"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 required
               />
             </div>
@@ -97,8 +128,8 @@ export const CreateEventDialog = () => {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit" variant="hero">
-              Créer l'événement
+            <Button type="submit" variant="hero" disabled={createEvent.isPending}>
+              {createEvent.isPending ? "Création..." : "Créer l'événement"}
             </Button>
           </DialogFooter>
         </form>
